@@ -1,0 +1,41 @@
+name: dormy-watch
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"   # 30分おき(UTC基準。毎時7分と37分)
+  workflow_dispatch:          # 手動実行(調整用)
+    inputs:
+      show:
+        description: "調整モード(ページ文字列を表示するだけ)"
+        type: boolean
+        default: false
+
+permissions:
+  actions: write   # 見つけたあと自分自身を停止するため
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests beautifulsoup4
+
+      - name: 調整モード
+        if: ${{ github.event.inputs.show == 'true' }}
+        run: python dormy_watch.py --show
+
+      - name: 監視
+        id: watch
+        if: ${{ github.event.inputs.show != 'true' }}
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python dormy_watch.py
+
+      - name: 見つかったら監視を停止
+        if: ${{ steps.watch.outputs.found == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow disable dormy-watch --repo ${{ github.repository }}
