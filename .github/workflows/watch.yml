@@ -11,6 +11,7 @@ on:
         default: false
 
 permissions:
+  contents: read
   actions: write   # 見つけたあと自分自身を停止するため
 
 jobs:
