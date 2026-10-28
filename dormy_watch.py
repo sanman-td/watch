@@ -41,7 +41,7 @@ def fetch_text():
 
 def notify(msg):
     requests.post(f"https://ntfy.sh/{NTFY_TOPIC}", data=msg.encode("utf-8"),
-                  headers={"Title": "Dormy Inn Izumo", "Priority": "high"}, timeout=15)
+                  headers={"Title": "Dormy Inn Izumo", "Priority": "urgent"}, timeout=15)
 
 
 def main():
