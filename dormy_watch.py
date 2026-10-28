@@ -12,8 +12,9 @@ from playwright.sync_api import sync_playwright
 # ---- 設定 -------------------------------------------------
 CHECKIN = "2027/11/01"
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "change-me-to-a-secret-topic")
-OPEN_PATTERN = re.compile(r"[\d,]+\s*円")
-CLOSED_PATTERN = re.compile(r"プランは見つかりませんでした|受付期間外|ご予約いただけません")
+# 料金欄が「-」でなく数字などになったら受付開始とみなす
+OPEN_PATTERN = re.compile(r"[^\s\-]\s*\(消費税込\)")
+CLOSED_PATTERN = re.compile(r"受付期間外|ご予約いただけません")
 STATE_FILE = pathlib.Path(__file__).with_name(".dormy_state.json")
 # ------------------------------------------------------------
 
@@ -49,6 +50,8 @@ def main():
         i = text.find("プランを選択")
         print(text[i:i + 2500] if i >= 0 else text[:2500])
         print("\nチェックイン表示:", re.findall(r"20\d\d/\d\d/\d\d", text)[:3])
+        print("料金「-」の件数:", len(re.findall(r"-\s*\(消費税込\)", text)),
+              "/ 料金あり(数字等)の件数:", len(OPEN_PATTERN.findall(text)))
         print("OPEN一致:", bool(OPEN_PATTERN.search(text)),
               "/ CLOSED一致:", bool(CLOSED_PATTERN.search(text)))
         return
