@@ -10,7 +10,7 @@ import requests
 from playwright.sync_api import sync_playwright
 
 # ---- 設定 -------------------------------------------------
-CHECKIN = "2026/12/01"
+CHECKIN = "2027/11/01"
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "change-me-to-a-secret-topic")
 # 料金欄が「-」でなく数字などになったら受付開始とみなす
 OPEN_PATTERN = re.compile(r"[^\s\-]\s*\(消費税込\)")
