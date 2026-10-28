@@ -31,8 +31,8 @@ def fetch_text():
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(locale="ja-JP")
-        page.goto(URL, wait_until="networkidle", timeout=60000)
-        page.wait_for_timeout(8000)  # 検索結果の描画待ち
+        page.goto(URL, wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_timeout(15000)  # 検索結果の描画待ち
         text = page.inner_text("body")
         browser.close()
     return " ".join(text.split())
